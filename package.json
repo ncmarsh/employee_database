@@ -1,0 +1,25 @@
+{
+  "name": "employee_database",
+  "version": "1.0.0",
+  "description": "1. [Usage](#Usage)\r 1. [Languages and Concepts](#Languages-and-Concepts)\r 1. [Installation](#Installation)\r 1. [Demo](#Demo)\r 1. [Method](#Method)\r 1. [Roadmap](#Roadmap)\r 1. [Links](#Links)\r 1. [Contact](#Contact)\r 1. [Contributing](#Contributing)\r 1. [License](#License)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ncmarsh/employee_database.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ncmarsh/employee_database/issues"
+  },
+  "homepage": "https://github.com/ncmarsh/employee_database#readme",
+  "dependencies": {
+    "console.table": "^0.10.0",
+    "dotenv": "^8.2.0",
+    "inquirer": "^7.3.3",
+    "mysql": "^2.18.1"
+  }
+}
