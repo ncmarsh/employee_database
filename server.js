@@ -63,42 +63,42 @@ function startApp() {
                 case "View All Employees":
                     allEmployees();
                 break;
-                // // case "View All Employees by Department":
-                //     // allEmployeesByDept();
-                // // break;
-                // // case "View All Employees by Manager":
-                //     // allEmployeesByMgr()
-                // // break;
-                // case "Add Employee":
-                //     addEmployee();
+                // case "View All Employees by Department":
+                    // allEmployeesByDept();
                 // break;
-                // // case "Remove Employee":
-                //     // removeEmployee();
-                // // break;
-                // case "Update Employee Role":
-                //     updateRole();
+                // case "View All Employees by Manager":
+                    // allEmployeesByMgr()
                 // break;
-                // // case "Update Employee Manager":
-                //     // updateEmployeeMgr();
-                // // break;
-                // case "View All Roles":
-                //     allRoles();
+                case "Add Employee":
+                    addEmployee();
+                break;
+                // case "Remove Employee":
+                    // removeEmployee();
                 // break;
-                // case "Add Role":
-                //     addRole();
+                case "Update Employee Role":
+                    updateRole();
+                break;
+                // case "Update Employee Manager":
+                    // updateEmployeeMgr();
                 // break;
-                // // case "Remove Role":
-                //     // removeRole();
-                // // break;
-                // case "View All Departments":
-                //     allDepts();
+                case "View All Roles":
+                    allRoles();
+                break;
+                case "Add Role":
+                    addRole();
+                break;
+                // case "Remove Role":
+                    // removeRole();
                 // break;
-                // case "Add Department":
-                //     addDept();
+                case "View All Departments":
+                    allDepts();
+                break;
+                case "Add Department":
+                    addDept();
+                break;
+                // case "Remove Department":
+                    // removeDept();
                 // break;
-                // // case "Remove Department":
-                //     // removeDept();
-                // // break;
                 case "Exit":
                     connection.end();
             }
@@ -146,7 +146,11 @@ function allEmployees() {
 
 // Add Employee - asks first name, asks last name, list of titles, asks salary, asks manager using a list including a none option
 function addEmployee() {
+    connection.query(query, function(err, result) {
+        if (err) throw err;
 
+        startApp();
+    })
 }
 
 // Remove Employee - shows list of employees
@@ -156,7 +160,11 @@ function addEmployee() {
 
 // Update Employee Role
 function updateRole() {
+    connection.query(query, function(err, result) {
+        if (err) throw err;
 
+        startApp();
+    })
 }
 
 // Update Employee Manager - list to choose employee to update, list to choose manager
@@ -166,12 +174,28 @@ function updateRole() {
 
 // View All Roles
 function allRoles() {
-// SELECT DISTINCT to just get one..?
+    let query = "SELECT DISTINCT title FROM role";
+
+    connection.query(query, function(err, result) {
+        if (err) throw err;
+
+        for (let i = 0; i < result.length; i++) {
+            console.table([
+                {title: result[i].title}
+            ]);
+        };
+
+        startApp();
+    })   
 }
 
 // Add Role
 function addRole() {
+    connection.query(query, function(err, result) {
+        if (err) throw err;
 
+        startApp();
+    })
 }
 
 // Remove Role
@@ -181,12 +205,28 @@ function addRole() {
 
 // View All Departments
 function allDepts() {
+    let query = "SELECT DISTINCT dept_name FROM department";
 
+    connection.query(query, function(err, result) {
+        if (err) throw err;
+
+        for (let i = 0; i < result.length; i++) {
+            console.table([
+                {dept_name: result[i].dept_name}
+            ]);
+        };
+
+        startApp();
+    })
 }
 
 // Add Department
 function addDept() {
+    connection.query(query, function(err, result) {
+        if (err) throw err;
 
+        startApp();
+    })
 }
 
 // Remove Department
