@@ -17,15 +17,25 @@ const connection = mysql.createConnection({
 // Start connection to MySQL
 connection.connect(function(err) {
     if (err) throw err;
-    // console.log(" ______   ___ __ __   ______   __       ______   __  __   ______   ______       ______   ________   _________  ________    _______   ________   ______   ______      ");
-    // console.log("/_____/\ /__//_//_/\ /_____/\ /_/\     /_____/\ /_/\/_/\ /_____/\ /_____/\     /_____/\ /_______/\ /________/\/_______/\ /_______/\ /_______/\ /_____/\ /_____/\     ");
-    // console.log("\::::_\/_\::\| \| \ \\:::_ \ \\:\ \    \:::_ \ \\ \ \ \ \\::::_\/_\::::_\/_    \:::_ \ \\::: _  \ \\__.::.__\/\::: _  \ \\::: _  \ \\::: _  \ \\::::_\/_\::::_\/_    ");
-    // console.log(" \:\/___/\\:.      \ \\:(_) \ \\:\ \    \:\ \ \ \\:\_\ \ \\:\/___/\\:\/___/\    \:\ \ \ \\::(_)  \ \  \::\ \   \::(_)  \ \\::(_)  \/_\::(_)  \ \\:\/___/\\:\/___/\   ");
-    // console.log("  \::___\/_\:.\-/\  \ \\: ___\/ \:\ \____\:\ \ \ \\::::_\/ \::___\/_\::___\/_    \:\ \ \ \\:: __  \ \  \::\ \   \:: __  \ \\::  _  \ \\:: __  \ \\_::._\:\\::___\/_  ");
-    // console.log("   \:\____/\\. \  \  \ \\ \ \    \:\/___/\\:\_\ \ \ \::\ \  \:\____/\\:\____/\    \:\/.:| |\:.\ \  \ \  \::\ \   \:.\ \  \ \\::(_)  \ \\:.\ \  \ \ /____\:\\:\____/\ ");
-    // console.log("    \_____\/ \__\/ \__\/ \_\/     \_____\/ \_____\/  \__\/   \_____\/ \_____\/     \____/_/ \__\/\__\/   \__\/    \__\/\__\/ \_______\/ \__\/\__\/ \_____\/ \_____\/ ");
- 
-    startApp();;
+
+    // console.log("  ______   ___ __ __   ______   __       ______   __  __   ______   ______      ");
+    // console.log(" /_____/\ /__//_//_/\ /_____/\ /_/\     /_____/\ /_/\/_/\ /_____/\ /_____/\     ");
+    // console.log(" \::::_\/_\::\| \| \ \\:::_ \ \\:\ \    \:::_ \ \\ \ \ \ \\::::_\/_\::::_\/_    ");
+    // console.log("  \:\/___/\\:.      \ \\:(_) \ \\:\ \    \:\ \ \ \\:\_\ \ \\:\/___/\\:\/___/\   ");
+    // console.log("   \::___\/_\:.\-/\  \ \\: ___\/ \:\ \____\:\ \ \ \\::::_\/ \::___\/_\::___\/_  ");
+    // console.log("    \:\____/\\. \  \  \ \\ \ \    \:\/___/\\:\_\ \ \ \::\ \  \:\____/\\:\____/\ ");
+    // console.log("     \_____\/ \__\/ \__\/ \_\/     \_____\/ \_____\/  \__\/   \_____\/ \_____\/ ");
+    // console.log("                                                                                ");
+    // console.log("   ______   ________   _________  ________    _______   ________   ______   ______      ");
+    // console.log("  /_____/\ /_______/\ /________/\/_______/\ /_______/\ /_______/\ /_____/\ /_____/\     ");
+    // console.log("  \:::_ \ \\::: _  \ \\__.::.__\/\::: _  \ \\::: _  \ \\::: _  \ \\::::_\/_\::::_\/_    ");
+    // console.log("   \:\ \ \ \\::(_)  \ \  \::\ \   \::(_)  \ \\::(_)  \/_\::(_)  \ \\:\/___/\\:\/___/\   ");
+    // console.log("    \:\ \ \ \\:: __  \ \  \::\ \   \:: __  \ \\::  _  \ \\:: __  \ \\_::._\:\\::___\/_  ");
+    // console.log("     \:\/.:| |\:.\ \  \ \  \::\ \   \:.\ \  \ \\::(_)  \ \\:.\ \  \ \ /____\:\\:\____/\ ");
+    // console.log("      \____/_/ \__\/\__\/   \__\/    \__\/\__\/ \_______\/ \__\/\__\/ \_____\/ \_____\/ ");
+    // console.log("\n");
+
+    startApp();
 });
   
 const userQuestion = [
@@ -108,13 +118,10 @@ function startApp() {
 
 // View All Employees will show a table of all employees information
 function allEmployees() {
-    let query = "SELECT * FROM employee ";
-    // query += "LEFT JOIN role ON employee.role_id = role.title WHERE employee.role_id = employee.id";
+    let query = "SELECT employee.id, employee.first_name, employee.last_name, employee.manager_id, role.title, department.dept_name, role.salary FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department on role.dept_id = department.id LEFT JOIN employee m ON employee.manager_id = m.id";
 
     connection.query(query, function(err, result) {
         if (err) throw err;
-
-        // console.log(result);
     
         for (let i = 0; i < result.length; i++) {
             console.table([
@@ -122,10 +129,10 @@ function allEmployees() {
                     id: result[i].id,
                     first_name: result[i].first_name, 
                     last_name: result[i].last_name, 
-                    title: result[i].role_id, 
-                    department: result[i].dept_id, 
+                    title: result[i].title, 
+                    department: result[i].dept_name, 
                     salary: result[i].salary, 
-                    manager: result[i].manager_id
+                    manager: result[i].first_name + " " + result[i].last_name
                 }
             ]);
         }
@@ -146,7 +153,7 @@ function allEmployees() {
 
 // Add Employee - asks first name, asks last name, list of titles, asks salary, asks manager using a list including a none option
 function addEmployee() {
-    let query = "SELECT DISTINCT title FROM role";
+    let query = "SELECT * FROM employee";
 
     connection.query(query, function(err, result) {
         if (err) throw err;
@@ -196,9 +203,23 @@ function addEmployee() {
 
 // Update Employee Role
 function updateRole() {
-    let query = "SELECT ";
+    let query = "SELECT * from employee";
     connection.query(query, function(err, result) {
         if (err) throw err;
+
+        let employeeNames = [];
+        let allRoles = [];
+
+        for (let i = 0; i < result.length; i ++) {
+            let eachName = result[i].first_name + " " + result[i].last_name;
+            employeeNames.push(eachName);
+
+            let eachRole = result[i].role_id;
+            allRoles.push(eachRole);
+        }
+
+        console.log(employeeNames);
+        console.log(allRoles);
 
         inquirer
         .prompt([
@@ -206,18 +227,18 @@ function updateRole() {
                 type: "list",
                 message: "Whose role would you like to update?",
                 name: "name",
-                choices: [result.name]
+                choices: [...employeeNames]
             },
             {
                 type: "list",
                 message: "What is the employee's new role?",
                 name: "role",
-                choices: [result.role]
+                choices: [...allRoles]
             }
         ]).then(function(response) {
             console.log("working");
 
-            startApp();
+            // startApp();
         })
     })
 }
