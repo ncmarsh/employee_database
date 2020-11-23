@@ -146,10 +146,46 @@ function allEmployees() {
 
 // Add Employee - asks first name, asks last name, list of titles, asks salary, asks manager using a list including a none option
 function addEmployee() {
+    let query = "SELECT DISTINCT title FROM role";
+
     connection.query(query, function(err, result) {
         if (err) throw err;
 
-        startApp();
+        inquirer
+        .prompt([
+            {
+                type: "input",
+                message: "What is the employee's first name?",
+                name: "firstName"
+            },
+            {
+                type: "input",
+                message: "What is the employee's last name?",
+                name: "lastName"
+            },
+            {
+                type: "list",
+                message: "Select the employee's title.",
+                name: "title",
+                choices: [result.title]
+            },
+            {
+                type: "input",
+                message: "What is the employee's salary?",
+                name: "salary"
+            },
+            // {
+            //     type: "list",
+            //     message: "Who is the employee's manager?",
+            //     name: "empManager",
+            //     choices: [result.manager_id]
+            // }
+        ]).then(function(response) {
+            console.log("working");
+
+            startApp();
+        })
+        
     })
 }
 
@@ -160,10 +196,29 @@ function addEmployee() {
 
 // Update Employee Role
 function updateRole() {
+    let query = "SELECT ";
     connection.query(query, function(err, result) {
         if (err) throw err;
 
-        startApp();
+        inquirer
+        .prompt([
+            {
+                type: "list",
+                message: "Whose role would you like to update?",
+                name: "name",
+                choices: [result.name]
+            },
+            {
+                type: "list",
+                message: "What is the employee's new role?",
+                name: "role",
+                choices: [result.role]
+            }
+        ]).then(function(response) {
+            console.log("working");
+
+            startApp();
+        })
     })
 }
 
@@ -194,7 +249,18 @@ function addRole() {
     connection.query(query, function(err, result) {
         if (err) throw err;
 
-        startApp();
+        inquirer
+        .prompt([
+            {
+                type: "input",
+                message: "What role would you like to add?",
+                name: "newRole"
+            }
+        ]).then(function(response) {
+            console.log("working");
+
+            startApp();
+        })
     })
 }
 
@@ -225,7 +291,18 @@ function addDept() {
     connection.query(query, function(err, result) {
         if (err) throw err;
 
-        startApp();
+        inquirer
+        .prompt([
+            {
+                type: "input",
+                message: "What department would you like to add?",
+                name: "newDept"
+            }
+        ]).then(function(response) {
+            console.log("working");
+
+            startApp();
+        })
     })
 }
 
