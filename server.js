@@ -2,6 +2,9 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
 const cTable = require("console.table");
+const Department = require("./lib/Department");
+const Employee = require("./lib/Employee");
+const Role = require("./lib/Role");
 require("dotenv").config();
 
 
@@ -122,20 +125,8 @@ function allEmployees() {
 
     connection.query(query, function(err, result) {
         if (err) throw err;
-    
-        for (let i = 0; i < result.length; i++) {
-            console.table([
-                {
-                    id: result[i].id,
-                    first_name: result[i].first_name, 
-                    last_name: result[i].last_name, 
-                    title: result[i].title, 
-                    department: result[i].dept_name, 
-                    salary: result[i].salary, 
-                    manager: result[i].first_name + " " + result[i].last_name
-                }
-            ]);
-        }
+
+        console.table(result);
 
         startApp();
     })
@@ -153,10 +144,19 @@ function allEmployees() {
 
 // Add Employee - asks first name, asks last name, list of titles, asks salary, asks manager using a list including a none option
 function addEmployee() {
-    let query = "SELECT * FROM employee";
+    let query = "SELECT * FROM role";
 
     connection.query(query, function(err, result) {
         if (err) throw err;
+        console.table(result);
+        let allRoles = [];
+
+        for (let i = 0; i < result.length; i++) {
+            let eachRole = result[i].title;
+            allRoles.push(eachRole);
+        }
+
+        console.log(allRoles);
 
         inquirer
         .prompt([
@@ -174,13 +174,8 @@ function addEmployee() {
                 type: "list",
                 message: "Select the employee's title.",
                 name: "title",
-                choices: [result.title]
-            },
-            {
-                type: "input",
-                message: "What is the employee's salary?",
-                name: "salary"
-            },
+                choices: [...allRoles]
+            }
             // {
             //     type: "list",
             //     message: "Who is the employee's manager?",
@@ -188,11 +183,30 @@ function addEmployee() {
             //     choices: [result.manager_id]
             // }
         ]).then(function(response) {
-            console.log("working");
+            console.log(response);
 
-            startApp();
+            let chosenRoleId = "";
+            
+            for (let i = 0; i < result.length; i++) {
+                if (response.title === result[i].title) {
+                    chosenRoleId = result[i].id;
+                }
+            }
+
+            connection.query("INSERT INTO employee SET ?", [     
+                {
+                    first_name: response.firstName,
+                    last_name: response.lastName,
+                    role_id: chosenRoleId
+                }
+            ],
+            function(err) {
+                if (err) throw err;
+                console.log("Employee database updated!");
+
+                startApp();
+            });
         })
-        
     })
 }
 
@@ -203,18 +217,20 @@ function addEmployee() {
 
 // Update Employee Role
 function updateRole() {
-    let query = "SELECT * from employee";
+    let query = "SELECT * from employee LEFT JOIN role ON employee.role_id = role.id";
+
     connection.query(query, function(err, result) {
         if (err) throw err;
+        console.table(result);
 
         let employeeNames = [];
         let allRoles = [];
 
-        for (let i = 0; i < result.length; i ++) {
+        for (let i = 0; i < result.length; i++) {
             let eachName = result[i].first_name + " " + result[i].last_name;
             employeeNames.push(eachName);
 
-            let eachRole = result[i].role_id;
+            let eachRole = result[i].title;
             allRoles.push(eachRole);
         }
 
@@ -238,7 +254,7 @@ function updateRole() {
         ]).then(function(response) {
             console.log("working");
 
-            // startApp();
+            startApp();
         })
     })
 }
@@ -267,6 +283,8 @@ function allRoles() {
 
 // Add Role
 function addRole() {
+    let query = "SELECT * FROM role";
+
     connection.query(query, function(err, result) {
         if (err) throw err;
 
@@ -276,9 +294,27 @@ function addRole() {
                 type: "input",
                 message: "What role would you like to add?",
                 name: "newRole"
+            },
+            {
+                type: "input",
+                message: "What is the salary for this new role?",
+                name: "salary"
+            },
+            {
+                type: "list",
+                message: "In which department is this new role?",
+                name: "dept",
+                choices: [
+
+                ]
             }
         ]).then(function(response) {
-            console.log("working");
+            console.log(response.newRole);
+            "INSERT INTO role SET ?",
+            {
+                title: response.newRole,
+                salary: response.salary
+            }
 
             startApp();
         })
@@ -321,7 +357,10 @@ function addDept() {
             }
         ]).then(function(response) {
             console.log("working");
-
+            "INSERT INTO department SET ?",
+            {
+                dept_name: response.newDept
+            },
             startApp();
         })
     })
