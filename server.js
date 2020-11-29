@@ -123,10 +123,10 @@ function startApp() {
 function allEmployees() {
     let query = "SELECT employee.id, employee.first_name, employee.last_name, employee.manager_id, role.title, department.dept_name, role.salary FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department on role.dept_id = department.id LEFT JOIN employee m ON employee.manager_id = m.id";
 
-    connection.query(query, function(err, result) {
+    connection.query(query, function(err, results) {
         if (err) throw err;
 
-        console.table(result);
+        console.table(results);
 
         startApp();
     })
@@ -144,69 +144,80 @@ function allEmployees() {
 
 // Add Employee - asks first name, asks last name, list of titles, asks salary, asks manager using a list including a none option
 function addEmployee() {
-    let query = "SELECT * FROM role";
-
-    connection.query(query, function(err, result) {
+    connection.query("SELECT * FROM role", function(err, results) {
         if (err) throw err;
-        console.table(result);
+        console.table(results);
         let allRoles = [];
 
-        for (let i = 0; i < result.length; i++) {
-            let eachRole = result[i].title;
+        for (let i = 0; i < results.length; i++) {
+            let eachRole = results[i].title;
             allRoles.push(eachRole);
         }
 
         console.log(allRoles);
 
-        inquirer
-        .prompt([
-            {
-                type: "input",
-                message: "What is the employee's first name?",
-                name: "firstName"
-            },
-            {
-                type: "input",
-                message: "What is the employee's last name?",
-                name: "lastName"
-            },
-            {
-                type: "list",
-                message: "Select the employee's title.",
-                name: "title",
-                choices: [...allRoles]
-            }
-            // {
-            //     type: "list",
-            //     message: "Who is the employee's manager?",
-            //     name: "empManager",
-            //     choices: [result.manager_id]
-            // }
-        ]).then(function(response) {
-            console.log(response);
+        // connection.query("SELECT * FROM employee", function(err, results) {
+        //     if (err) throw err;
+        //     console.table(results);
+        //     let allEmployees = ["This employee has no manager"];
 
-            let chosenRoleId = "";
-            
-            for (let i = 0; i < result.length; i++) {
-                if (response.title === result[i].title) {
-                    chosenRoleId = result[i].id;
-                }
-            }
+        //     for (let i = 0; i < results.length; i++) {
+        //         let eachEmployee = results[i].first_name + " " + results[i].last_name;
+        //         allEmployees.push(eachEmployee);
+        //     }
 
-            connection.query("INSERT INTO employee SET ?", [     
+        //     console.log(allEmployees);
+
+            inquirer
+            .prompt([
                 {
-                    first_name: response.firstName,
-                    last_name: response.lastName,
-                    role_id: chosenRoleId
+                    type: "input",
+                    message: "What is the employee's first name?",
+                    name: "firstName"
+                },
+                {
+                    type: "input",
+                    message: "What is the employee's last name?",
+                    name: "lastName"
+                },
+                {
+                    type: "list",
+                    message: "Select the employee's title.",
+                    name: "title",
+                    choices: [...allRoles]
                 }
-            ],
-            function(err) {
-                if (err) throw err;
-                console.log("Employee database updated!");
+                // {
+                //     type: "list",
+                //     message: "Who is the employee's manager?",
+                //     name: "empManager",
+                //     choices: [...allEmployees]
+                // }
+            ]).then(function(response) {
+                console.log(response);
 
-                startApp();
-            });
-        })
+                let chosenRoleId = "";
+                
+                for (let i = 0; i < results.length; i++) {
+                    if (response.title === results[i].title) {
+                        chosenRoleId = results[i].id;
+                    }
+                }
+
+                connection.query("INSERT INTO employee SET ?", [     
+                    {
+                        first_name: response.firstName,
+                        last_name: response.lastName,
+                        role_id: chosenRoleId
+                    }
+                ],
+                function(err) {
+                    if (err) throw err;
+                    console.log("Employee database updated!");
+
+                    startApp();
+                });
+            })
+        // })
     })
 }
 
@@ -219,18 +230,18 @@ function addEmployee() {
 function updateRole() {
     let query = "SELECT * from employee LEFT JOIN role ON employee.role_id = role.id";
 
-    connection.query(query, function(err, result) {
+    connection.query(query, function(err, results) {
         if (err) throw err;
-        console.table(result);
+        console.table(results);
 
         let employeeNames = [];
         let allRoles = [];
 
-        for (let i = 0; i < result.length; i++) {
-            let eachName = result[i].first_name + " " + result[i].last_name;
+        for (let i = 0; i < results.length; i++) {
+            let eachName = results[i].first_name + " " + results[i].last_name;
             employeeNames.push(eachName);
 
-            let eachRole = result[i].title;
+            let eachRole = results[i].title;
             allRoles.push(eachRole);
         }
 
@@ -264,18 +275,14 @@ function updateRole() {
 
 // }
 
-// View All Roles
+// View All Roles - will display an alphabetical table of all the roles in the database
 function allRoles() {
-    let query = "SELECT DISTINCT title FROM role";
+    let query = "SELECT DISTINCT title FROM role ORDER BY title ASC";
 
-    connection.query(query, function(err, result) {
+    connection.query(query, function(err, results) {
         if (err) throw err;
 
-        for (let i = 0; i < result.length; i++) {
-            console.table([
-                {title: result[i].title}
-            ]);
-        };
+        console.table(results);
 
         startApp();
     })   
@@ -283,10 +290,17 @@ function allRoles() {
 
 // Add Role
 function addRole() {
-    let query = "SELECT * FROM role";
+    let query = "SELECT * FROM department ORDER BY dept_name ASC";
 
-    connection.query(query, function(err, result) {
+    connection.query(query, function(err, results) {
         if (err) throw err;
+
+        let allDepts = [];
+
+        for (let i = 0; i < results.length; i++) {
+            let eachDept = results[i].dept_name;
+            allDepts.push(eachDept);
+        }
 
         inquirer
         .prompt([
@@ -304,19 +318,29 @@ function addRole() {
                 type: "list",
                 message: "In which department is this new role?",
                 name: "dept",
-                choices: [
-
-                ]
+                choices: [...allDepts]
             }
         ]).then(function(response) {
-            console.log(response.newRole);
-            "INSERT INTO role SET ?",
-            {
-                title: response.newRole,
-                salary: response.salary
+            let chosenDeptId;
+
+            for (let i = 0; i < results.length; i++) {
+                if (results[i].dept_name === response.dept) {
+                    chosenDeptId = results[i].id;
+                }
             }
 
-            startApp();
+            connection.query("INSERT INTO role SET ?", 
+                {
+                    title: response.newRole,
+                    salary: response.salary,
+                    dept_id: chosenDeptId
+                },
+                function(err) {
+                    if (err) throw err;
+                    console.log("New role has been added");
+    
+                    startApp();
+                })   
         })
     })
 }
@@ -326,44 +350,40 @@ function addRole() {
 
 // }
 
-// View All Departments
+// View All Departments - will display an alphabetical table of all departments in the database
 function allDepts() {
-    let query = "SELECT DISTINCT dept_name FROM department";
+    let query = "SELECT DISTINCT dept_name FROM department ORDER BY dept_name ASC";
 
-    connection.query(query, function(err, result) {
+    connection.query(query, function(err, results) {
         if (err) throw err;
 
-        for (let i = 0; i < result.length; i++) {
-            console.table([
-                {dept_name: result[i].dept_name}
-            ]);
-        };
+        console.table(results);
 
         startApp();
     })
 }
 
-// Add Department
+// Add Department - adds a new department to the database
 function addDept() {
-    connection.query(query, function(err, result) {
-        if (err) throw err;
-
-        inquirer
-        .prompt([
-            {
-                type: "input",
-                message: "What department would you like to add?",
-                name: "newDept"
-            }
-        ]).then(function(response) {
-            console.log("working");
-            "INSERT INTO department SET ?",
+    inquirer
+    .prompt([
+        {
+            type: "input",
+            message: "What department would you like to add?",
+            name: "newDept"
+        }
+    ]).then(function(response) {
+        connection.query("INSERT INTO department SET ?", 
             {
                 dept_name: response.newDept
             },
-            startApp();
+            function(err) {
+                if (err) throw err;
+                console.log("New department has been added");
+
+                startApp();
+            })            
         })
-    })
 }
 
 // Remove Department
