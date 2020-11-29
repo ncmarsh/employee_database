@@ -288,7 +288,7 @@ function allRoles() {
     })   
 }
 
-// Add Role
+// Add Role - adds a new role with salary and the department id to the database
 function addRole() {
     let query = "SELECT * FROM department ORDER BY dept_name ASC";
 
