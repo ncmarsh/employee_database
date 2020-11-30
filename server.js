@@ -208,94 +208,81 @@ function allEmployeesByDept() {
 
 // Add Employee - asks first name, asks last name, list of titles, asks manager using a list including a none option
 function addEmployee() {
-    let query = "SELECT * FROM role";
+    // let query = "SELECT * FROM role";
+    let query = "SELECT employee.id, employee.first_name, employee.last_name, employee.role_id, role.title FROM employee LEFT JOIN role ON employee.role_id = role.id";
 
     connection.query(query, function(err, results) {
         if (err) throw err;
-        console.table(results);
+
+        let employeeNames = ["None"];
         let allRoles = [];
 
         for (let i = 0; i < results.length; i++) {
+            let eachName = results[i].first_name + " " + results[i].last_name;
+            employeeNames.push(eachName);
+
             let eachRole = results[i].title;
-            allRoles.push(eachRole);
+            allRoles.push(eachRole); 
         }
 
-        console.log(allRoles);
-
-        // connection.query("SELECT * FROM employee", function(err, results) {
-        //     if (err) throw err;
-        //     console.table(results);
-        //     let allEmployees = ["This employee has no manager"];
-
-        //     for (let i = 0; i < results.length; i++) {
-        //         let eachEmployee = results[i].first_name + " " + results[i].last_name;
-        //         allEmployees.push(eachEmployee);
-        //     }
-
-        //     console.log(allEmployees);
-
-            inquirer
-            .prompt([
-                {
-                    type: "input",
-                    message: "What is the employee's first name?",
-                    name: "firstName"
-                },
-                {
-                    type: "input",
-                    message: "What is the employee's last name?",
-                    name: "lastName"
-                },
-                {
-                    type: "list",
-                    message: "Select the employee's title.",
-                    name: "title",
-                    choices: [...allRoles]
+        inquirer
+        .prompt([
+            {
+                type: "input",
+                message: "What is the employee's first name?",
+                name: "firstName"
+            },
+            {
+                type: "input",
+                message: "What is the employee's last name?",
+                name: "lastName"
+            },
+            {
+                type: "list",
+                message: "Select the employee's title.",
+                name: "title",
+                choices: [...allRoles]
+            },
+            {
+                type: "list",
+                message: "Who is the employee's manager?",
+                name: "empManager",
+                choices: [...employeeNames]
+            }
+        ]).then(function(response) {
+            let chosenRoleId = "";
+            
+            for (let i = 0; i < results.length; i++) {
+                if (response.title === results[i].title) {
+                    chosenRoleId = results[i].role_id;
                 }
-                // {
-                //     type: "list",
-                //     message: "Who is the employee's manager?",
-                //     name: "empManager",
-                //     choices: [...allEmployees]
-                // }
-            ]).then(function(response) {
-                console.log(response);
+            }
 
-                let chosenRoleId = "";
-                
-                for (let i = 0; i < results.length; i++) {
-                    if (response.title === results[i].title) {
-                        chosenRoleId = results[i].id;
-                    }
+            let chosenMgrId = "";
+
+            for (let i = 0; i < results.length; i++) {
+                if (response.empManager === (results[i].first_name + " " + results[i].last_name)) {
+                    chosenMgrId = results[i].id;
                 }
+                else if (response.empManager === "None") {
+                    chosenMgrId = null;
+                }
+            }
 
-                // let chosenMgrId = "";
+            connection.query("INSERT INTO employee SET ?",   
+                {
+                    first_name: response.firstName,
+                    last_name: response.lastName,
+                    role_id: chosenRoleId,
+                    manager_id: chosenMgrId
+                },
+                function(err) {
+                    if (err) throw err;
+                    console.log("Employee database updated!");
 
-                // for (let i = 0; i < results.length; i++) {
-                //     if (response.empManager === (results[i].first_name + " " + results[i].last_name)) {
-                //         chosenMgrId = results[i].id;
-                //         console.log(chosenMgrId);
-                //     }
-                //     else if (response.empManager === "This employee has no manager") {
-                //         chosenMgrId = null;
-                //     }
-                // }
-
-                connection.query("INSERT INTO employee SET ?",   
-                    {
-                        first_name: response.firstName,
-                        last_name: response.lastName,
-                        role_id: chosenRoleId
-                        // manager_id: chosenMgrId
-                    },
-                    function(err) {
-                        if (err) throw err;
-                        console.log("Employee database updated!");
-
-                        startApp();
-                    });
-                })
-        // })
+                    startApp();
+            });
+        })
     })
 }
 
