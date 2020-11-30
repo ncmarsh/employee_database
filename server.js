@@ -49,7 +49,7 @@ const userQuestion = [
         choices: [
             "View All Employees",
             "View All Employees by Department",
-            "View All Employees by Manager",
+            // "View All Employees by Manager",
             "Add Employee",
             // "Remove Employee",
             "Update Employee Role",
@@ -79,9 +79,9 @@ function startApp() {
                 case "View All Employees by Department":
                     allEmployeesByDept();
                 break;
-                case "View All Employees by Manager":
-                    allEmployeesByMgr()
-                break;
+                // case "View All Employees by Manager":
+                //     allEmployeesByMgr()
+                // break;
                 case "Add Employee":
                     addEmployee();
                 break;
@@ -306,26 +306,27 @@ function addEmployee() {
 
 // Update Employee Role
 function updateRole() {
-    // let query = "SELECT * from employee LEFT JOIN role ON employee.role_id = role.id";
-    let query = "SELECT * FROM employee ORDER BY last_name ASC";
+    // let query = "SELECT *, role.title AS Title from employee LEFT JOIN role ON employee.role_id = role.id";
+    // let query = "SELECT * FROM employee ORDER BY last_name ASC";
+    let query = "SELECT employee.id, employee.first_name, employee.last_name, employee.role_id, role.title FROM employee LEFT JOIN role ON employee.role_id = role.id";
 
     connection.query(query, function(err, results) {
         if (err) throw err;
         console.table(results);
 
         let employeeNames = [];
-        // let allRoles = [];
+        let allRoles = [];
 
         for (let i = 0; i < results.length; i++) {
             let eachName = results[i].first_name + " " + results[i].last_name;
             employeeNames.push(eachName);
 
-            // let eachRole = results[i].title;
-            // allRoles.push(eachRole); 
+            let eachRole = results[i].title;
+            allRoles.push(eachRole); 
         }
 
         console.log(employeeNames);
-        // console.log(allRoles);
+        console.log(allRoles);
 
         inquirer
         .prompt([
@@ -334,17 +335,45 @@ function updateRole() {
                 message: "Whose role would you like to update?",
                 name: "name",
                 choices: [...employeeNames]
-            // },
-            // {
-            //     type: "list",
-            //     message: "What is the employee's new role?",
-            //     name: "role",
-            //     choices: [...allRoles]
+            },
+            {
+                type: "list",
+                message: "What is the employee's new role?",
+                name: "role",
+                choices: [...allRoles]
             }
         ]).then(function(response) {
-            console.log("working");
+            let chosenEmployeeId;
+            let chosenRoleId;
 
-            startApp();
+            for (let i = 0; i < results.length; i++) {
+                if ((results[i].first_name + " " + results[i].last_name) === response.name) {
+                    chosenEmployeeId = results[i].id;
+                }
+            }
+            console.log(chosenEmployeeId);
+            for (let i = 0; i < results.length; i++) {
+                if (results[i].title === response.role) {
+                    chosenRoleId = results[i].role_id;
+                }
+            }
+ 
+            console.log(chosenRoleId);
+            connection.query("UPDATE employee SET ? WHERE ?", 
+            [
+                {
+                    role_id: chosenRoleId
+                },
+                {
+                    id: chosenEmployeeId
+                }
+            ], function(err) {
+                if (err) throw err;
+
+                console.log("Employee role updated.");
+
+                startApp();
+            })
         })
     })
 }
