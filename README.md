@@ -61,7 +61,7 @@ Finally to begin the program, you'll enter:
 
 ## Demo
 
-
+![Demo](./assets/demo.gif)
 
 ## Method
 
