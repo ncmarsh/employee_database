@@ -21,7 +21,7 @@ Keep track of your business using this Employee Database command line applicatio
 
 ## Usage
 
-Using the MySQL database, you can keep track of your employees, their roles, salaries and managers and also maintain which roles and departments you have in your business.
+Using this Content Management System, you can keep track of your employees, their roles, salaries and managers and also maintain which roles and departments you have in your business.
 
 ## Languages and Concepts
 
@@ -41,15 +41,19 @@ After cloning the repository to your local computer, you'll want to add a new fi
 
 Inside this file, you'll want to add the following lines:
 
-        DB_USER=`root or YOUR USERNAME HERE`
+        DB_PORT=3306
+        DB_USER=root or YOUR USERNAME HERE
         DB_PASSWORD=`YOUR MYSQL PASSWORD HERE`
+        DB_DB=employee_db
 
 Next, you'll want to initialize Node.js and install the dependencies for the program. You can do this by running:
 
         $ npm init
         $ npm install
 
-Next, you'll want to run the schema.sql file in your MySql Workbench to set up the database schema. Note: Your database will initially be empty.
+Next, you'll want to run the schema.sql file in your MySql Workbench to set up the database schema. 
+
+Note: Your database will initially be empty. You'll need to first add Departments, then add Roles, then add Employees.
 
 Finally to begin the program, you'll enter:
 
