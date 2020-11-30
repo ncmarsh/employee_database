@@ -12,7 +12,6 @@ Keep track of your business using this Employee Database command line applicatio
 1. [Languages and Concepts](#Languages-and-Concepts)
 1. [Installation](#Installation)
 1. [Demo](#Demo)
-1. [Method](#Method)
 1. [Roadmap](#Roadmap)
 1. [Links](#Links)
 1. [Contact](#Contact)
@@ -62,10 +61,7 @@ Finally to begin the program, you'll enter:
 ## Demo
 
 ![Demo](./assets/demo.gif)
-
-## Method
-
-
+[View Full Demo](https://youtu.be/i2hdFaexJS4)
 
 ## Roadmap
 
@@ -74,6 +70,7 @@ To continue with this project, there are several features/functions I would like
 ## Links
 
 - [Project Repository](https://github.com/ncmarsh/employee_database)
+- [View Full Demo](https://youtu.be/i2hdFaexJS4)
 
 ## Contact
 
