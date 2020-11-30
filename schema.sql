@@ -24,3 +24,11 @@ CREATE TABLE employee (
   CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES role(id),
   CONSTRAINT fk_mgr FOREIGN KEY (manager_id) REFERENCES employee(id)
 );
+
+SELECT * FROM department;
+SELECT * FROM role;
+SELECT * FROM employee;
+
+INSERT INTO department (dept_name) VALUES ("Science"),("Engineering"),("Sales"),("Finance");
+INSERT INTO role (title, salary,dept_id) VALUES ("Scientist", 10, 1),("Engineer", 10, 2),("Salesperson", 5, 3),("Accountant", 5, 4);
+INSERT INTO employee (first_name, last_name,role_id,manager_id) VALUES ("Bill", "Nye", 1, null),("Betty", "White", 2, 1),("Elon", "Tusk", 2, 1),("Bill", "Bo", 3, 1),("Jiminy", "Cricket", 4, 1);
