@@ -2,9 +2,6 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
 const cTable = require("console.table");
-const Department = require("./lib/Department");
-const Employee = require("./lib/Employee");
-const Role = require("./lib/Role");
 require("dotenv").config();
 
 
@@ -32,17 +29,12 @@ const userQuestion = [
         choices: [
             "View All Employees",
             "View All Employees by Department",
-            // "View All Employees by Manager",
             "Add Employee",
-            // "Remove Employee",
             "Update Employee Role",
-            // "Update Employee Manager",
             "View All Roles",
             "Add Role",
-            // "Remove Role",
             "View All Departments",
             "Add Department",
-            // "Remove Department",
             "Exit"
         ]
     }
@@ -62,39 +54,24 @@ function startApp() {
                 case "View All Employees by Department":
                     allEmployeesByDept();
                 break;
-                // case "View All Employees by Manager":
-                //     allEmployeesByMgr()
-                // break;
                 case "Add Employee":
                     addEmployee();
                 break;
-                // case "Remove Employee":
-                    // removeEmployee();
-                // break;
                 case "Update Employee Role":
                     updateRole();
                 break;
-                // case "Update Employee Manager":
-                    // updateEmployeeMgr();
-                // break;
                 case "View All Roles":
                     allRoles();
                 break;
                 case "Add Role":
                     addRole();
                 break;
-                // case "Remove Role":
-                    // removeRole();
-                // break;
                 case "View All Departments":
                     allDepts();
                 break;
                 case "Add Department":
                     addDept();
                 break;
-                // case "Remove Department":
-                    // removeDept();
-                // break;
                 case "Exit":
                     connection.end();
             }
@@ -102,7 +79,7 @@ function startApp() {
 }
 
 
-// View All Employees will show a table of all employees information
+// View All Employees - will show a table of all employees information
 function allEmployees() {
     let query = "SELECT employee.id AS Id, employee.first_name AS `First Name`, employee.last_name AS `Last Name`, role.title AS Title, department.dept_name AS Department, role.salary AS Salary, CONCAT(m.first_name,' ',m.last_name) AS Manager FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department on role.dept_id = department.id LEFT JOIN employee m ON employee.manager_id = m.id";
 
@@ -115,7 +92,7 @@ function allEmployees() {
     })
 }
 
-// View All Employees by Dept 
+// View All Employees by Dept - user can select department they want to view
 function allEmployeesByDept() {
     let query = "SELECT DISTINCT dept_name FROM department ORDER BY dept_name ASC";
 
@@ -151,47 +128,8 @@ function allEmployeesByDept() {
     })
 }
 
-// View All Employees by Manager
-// function allEmployeesByMgr() {
-//     let query = "SELECT * FROM employee ORDER BY last_name ASC";
-    
-//     connection.query(query, function(err, results) {
-//         if (err) throw err;
-
-//         let allEmployees = [];
-
-//         for (let i = 0; i < results.length; i++) {
-//             let eachEmployee = results[i].first_name + " " + results[i].last_name;
-//             allEmployees.push(eachEmployee);
-//         }
-        
-//         inquirer
-//         .prompt([
-//             {
-//                 type: "list",
-//                 message: "Which manager's employees would you like to view?",
-//                 name: "mgrChoice",
-//                 choices: [...allEmployees]
-//             }
-//         ]).then(function(response) {
-//             console.log(response.mgrChoice);
-
-//             let query = "SELECT employee.id AS Id, employee.first_name AS `First Name`, employee.last_name AS `Last Name`, role.title `Title`, department.dept_name AS `Department`, role.salary AS `Salary` FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department on role.dept_id = department.id LEFT JOIN employee m ON employee.manager_id = m.id WHERE ?";
-
-//             connection.query(query, [response.mgrChoice], function(err, results) {
-//                 if (err) throw err;
- 
-//                 console.table(results);
-
-//                 startApp();
-//             })
-//         })
-//     })
-// }
-
-// Add Employee - asks first name, asks last name, list of titles, asks manager using a list including a none option
+// Add Employee - user can add new employee with first name, last name, titles, and manager, if applicable
 function addEmployee() {
-    // let query = "SELECT * FROM role";
     let query = "SELECT employee.id, employee.first_name, employee.last_name, employee.role_id, role.title FROM employee LEFT JOIN role ON employee.role_id = role.id";
 
     connection.query(query, function(err, results) {
@@ -269,20 +207,12 @@ function addEmployee() {
     })
 }
 
-// Remove Employee - shows list of employees
-// function removeEmployee() {
-
-// }
-
-// Update Employee Role
+// Update Employee Role - user can update the employee's role
 function updateRole() {
-    // let query = "SELECT *, role.title AS Title from employee LEFT JOIN role ON employee.role_id = role.id";
-    // let query = "SELECT * FROM employee ORDER BY last_name ASC";
     let query = "SELECT employee.id, employee.first_name, employee.last_name, employee.role_id, role.title FROM employee LEFT JOIN role ON employee.role_id = role.id";
 
     connection.query(query, function(err, results) {
         if (err) throw err;
-        console.table(results);
 
         let employeeNames = [];
         let allRoles = [];
@@ -294,9 +224,6 @@ function updateRole() {
             let eachRole = results[i].title;
             allRoles.push(eachRole); 
         }
-
-        console.log(employeeNames);
-        console.log(allRoles);
 
         inquirer
         .prompt([
@@ -321,14 +248,13 @@ function updateRole() {
                     chosenEmployeeId = results[i].id;
                 }
             }
-            console.log(chosenEmployeeId);
+            
             for (let i = 0; i < results.length; i++) {
                 if (results[i].title === response.role) {
                     chosenRoleId = results[i].role_id;
                 }
             }
  
-            console.log(chosenRoleId);
             connection.query("UPDATE employee SET ? WHERE ?", 
             [
                 {
@@ -347,11 +273,6 @@ function updateRole() {
         })
     })
 }
-
-// Update Employee Manager - list to choose employee to update, list to choose manager
-// function updateEmployeeMgr() {
-
-// }
 
 // View All Roles - will display an alphabetical table of all the roles in the database
 function allRoles() {
@@ -423,11 +344,6 @@ function addRole() {
     })
 }
 
-// Remove Role
-// function removeRole() {
-
-// }
-
 // View All Departments - will display an alphabetical table of all departments in the database
 function allDepts() {
     let query = "SELECT DISTINCT dept_name AS Department FROM department ORDER BY dept_name ASC";
@@ -463,8 +379,3 @@ function addDept() {
             })            
         })
 }
-
-// Remove Department
-// function removeDept() {
-
-// }
