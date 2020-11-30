@@ -61,6 +61,7 @@ Finally to begin the program, you'll enter:
 ## Demo
 
 ![Demo](./assets/demo.gif)
+
 [View Full Demo](https://youtu.be/i2hdFaexJS4)
 
 ## Roadmap
