@@ -53,7 +53,7 @@ Next, you'll want to initialize Node.js and install the dependencies for the pro
 
 Next, you'll want to run the schema.sql file in your MySql Workbench to set up the database schema. 
 
-Note: Your database will initially be empty. You'll need to first add Departments, then add Roles, then add Employees.
+Note: The schema.sql includes initial dummy data.
 
 Finally to begin the program, you'll enter:
 
@@ -69,7 +69,7 @@ Finally to begin the program, you'll enter:
 
 ## Roadmap
 
-To continue with this project, there are several features/functions I would like to add. First I would like to adjust the array that is created to show all the roles so that it doesn't show duplicates and so that it will truly show all available roles, rather than the roles that are already assigned to an employee. I would like to add the options to View All Employees by Manager, Update Employee Manager, Remove Employees, Remove Roles, Remove Departments, and View Total Utilized Budget of a Department. I would like to add a new column to specify how many positions of a certain role there are and to then show if there are any vacant positions. I would like to add a Manager column so that in the list of Manager options it will only show the employees designated as Managers.
+To continue with this project, there are several features/functions I would like to add. First I would like to adjust the array that is created to show all the roles so that it doesn't show duplicates and so that it will show all roles, rather than just the roles that are already assigned to an employee. I would like to add the options to View All Employees by Manager, Update Employee Manager, Remove Employees, Remove Roles, Remove Departments, and View Total Utilized Budget of a Department. I would like to add a new column to specify how many positions of a certain role there are and to then show if there are any vacant positions. I would like to add a Manager column so that in the list of Manager options it will only show the employees designated as Managers.
 
 ## Links
 
