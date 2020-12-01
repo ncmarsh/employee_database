@@ -224,8 +224,6 @@ function removeEmployee() {
             let eachName = results[i].first_name + " " + results[i].last_name;
             employeeNames.push(eachName);
         }
-        
-        console.log(employeeNames);
 
         inquirer
         .prompt([
@@ -236,11 +234,7 @@ function removeEmployee() {
                 choices: [...employeeNames]
             }
         ]).then(function(response) {
-            console.log(response);
             let deleteEmp = response.deleteName.split(" ");
-            console.log(deleteEmp);
-            console.log(deleteEmp[0]);
-            console.log(deleteEmp[1]);
 
             connection.query("DELETE FROM employee WHERE first_name = ? AND last_name = ?", 
                 [deleteEmp[0], deleteEmp[1]], function(err) {
