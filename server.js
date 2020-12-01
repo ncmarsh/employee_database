@@ -30,6 +30,7 @@ const userQuestion = [
             "View All Employees",
             "View All Employees by Department",
             "Add Employee",
+            "Remove Employee",
             "Update Employee Role",
             "View All Roles",
             "Add Role",
@@ -56,6 +57,9 @@ function startApp() {
                 break;
                 case "Add Employee":
                     addEmployee();
+                break;
+                case "Remove Employee":
+                    removeEmployee();
                 break;
                 case "Update Employee Role":
                     updateRole();
@@ -203,6 +207,49 @@ function addEmployee() {
 
                     startApp();
             });
+        })
+    })
+}
+
+// Remove Employee - choose from a list of employees to delete from the database
+function removeEmployee() {
+    let query = "SELECT * FROM employee ORDER BY last_name ASC";
+
+    connection.query(query, function(err, results) {
+        if (err) throw err;
+
+        let employeeNames = [];
+
+        for (let i = 0; i < results.length; i++) {
+            let eachName = results[i].first_name + " " + results[i].last_name;
+            employeeNames.push(eachName);
+        }
+        
+        console.log(employeeNames);
+
+        inquirer
+        .prompt([
+            {
+                type: "list",
+                message: "Whose role would you like to update?",
+                name: "deleteName",
+                choices: [...employeeNames]
+            }
+        ]).then(function(response) {
+            console.log(response);
+            let deleteEmp = response.deleteName.split(" ");
+            console.log(deleteEmp);
+            console.log(deleteEmp[0]);
+            console.log(deleteEmp[1]);
+
+            connection.query("DELETE FROM employee WHERE first_name = ? AND last_name = ?", 
+                [deleteEmp[0], deleteEmp[1]], function(err) {
+                if (err) throw err;
+
+                console.log("Employee deleted");
+
+                startApp();
+            })
         })
     })
 }
