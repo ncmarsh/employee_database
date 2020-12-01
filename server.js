@@ -51,7 +51,7 @@ const userQuestion = [
             "View All Employees by Department",
             // "View All Employees by Manager",
             "Add Employee",
-            // "Remove Employee",
+            "Remove Employee",
             "Update Employee Role",
             // "Update Employee Manager",
             "View All Roles",
@@ -85,9 +85,9 @@ function startApp() {
                 case "Add Employee":
                     addEmployee();
                 break;
-                // case "Remove Employee":
-                    // removeEmployee();
-                // break;
+                case "Remove Employee":
+                    removeEmployee();
+                break;
                 case "Update Employee Role":
                     updateRole();
                 break;
@@ -287,15 +287,51 @@ function addEmployee() {
 }
 
 // Remove Employee - shows list of employees
-// function removeEmployee() {
+function removeEmployee() {
+    let query = "SELECT * FROM employee ORDER BY last_name ASC";
 
-// }
+    connection.query(query, function(err, results) {
+        if (err) throw err;
+
+        let employeeNames = [];
+
+        for (let i = 0; i < results.length; i++) {
+            let eachName = results[i].first_name + " " + results[i].last_name;
+            employeeNames.push(eachName);
+        }
+        
+        console.log(employeeNames);
+
+        inquirer
+        .prompt([
+            {
+                type: "list",
+                message: "Whose role would you like to update?",
+                name: "deleteName",
+                choices: [...employeeNames]
+            }
+        ]).then(function(response) {
+            console.log(response);
+            let deleteEmp = response.deleteName.split(" ");
+            console.log(deleteEmp);
+            console.log(deleteEmp[0]);
+            console.log(deleteEmp[1]);
+
+            connection.query("DELETE FROM employee WHERE first_name = ? AND last_name = ?", 
+                [deleteEmp[0], deleteEmp[1]], function(err) {
+                if (err) throw err;
+
+                console.log("Employee deleted");
+
+                startApp();
+            })
+        })
+    })
+}
 
 // Update Employee Role
 function updateRole() {
-    // let query = "SELECT *, role.title AS Title from employee LEFT JOIN role ON employee.role_id = role.id";
-    // let query = "SELECT * FROM employee ORDER BY last_name ASC";
-    let query = "SELECT employee.id, employee.first_name, employee.last_name, employee.role_id, role.title FROM employee LEFT JOIN role ON employee.role_id = role.id";
+    let query = "SELECT employee.id, employee.first_name, employee.last_name, employee.role_id, role.title FROM employee RIGHT JOIN role ON employee.role_id = role.id ORDER BY last_name ASC";
 
     connection.query(query, function(err, results) {
         if (err) throw err;
@@ -306,10 +342,14 @@ function updateRole() {
 
         for (let i = 0; i < results.length; i++) {
             let eachName = results[i].first_name + " " + results[i].last_name;
-            employeeNames.push(eachName);
+            if (eachName !== "null null") {
+                employeeNames.push(eachName);
+            } 
 
             let eachRole = results[i].title;
-            allRoles.push(eachRole); 
+            if (eachRole !== null) {
+                allRoles.push(eachRole);
+            }
         }
 
         console.log(employeeNames);
@@ -332,20 +372,30 @@ function updateRole() {
         ]).then(function(response) {
             let chosenEmployeeId;
             let chosenRoleId;
+            let roleResponse = response.role;
 
             for (let i = 0; i < results.length; i++) {
                 if ((results[i].first_name + " " + results[i].last_name) === response.name) {
                     chosenEmployeeId = results[i].id;
                 }
             }
+
             console.log(chosenEmployeeId);
-            for (let i = 0; i < results.length; i++) {
-                if (results[i].title === response.role) {
-                    chosenRoleId = results[i].role_id;
+
+            connection.query("SELECT * FROM role", function(err, results) {
+                if (err) throw err;
+
+                console.table(results);
+                for (let i = 0; i < results.length; i++) {
+                    if (results[i].title === roleResponse) {
+                        chosenRoleId = results[i].id;
+
+                        console.log(chosenRoleId);
+                    }
                 }
-            }
- 
+            })
             console.log(chosenRoleId);
+
             connection.query("UPDATE employee SET ? WHERE ?", 
             [
                 {
